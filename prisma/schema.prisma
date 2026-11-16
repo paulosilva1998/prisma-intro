@@ -1,0 +1,44 @@
+generator client {
+  provider            = "prisma-client"
+  output              = "../generated/prisma"
+  moduleFormat        = "esm"
+  importFileExtension = "ts"
+}
+
+datasource db {
+  provider = "mysql"
+}
+
+model User {
+  id       Int      @id @default(autoincrement())
+  nome     String
+  email    String   @unique
+  criadoEm DateTime @default(now())
+  profile  Profile?
+  posts    Post[]
+}
+
+model Profile {
+  id     Int     @id @default(autoincrement())
+  bio    String?
+  userId Int     @unique
+  user   User    @relation(fields: [userId], references: [id], onDelete: Cascade)
+}
+
+model Post {
+  id         Int         @id @default(autoincrement())
+  titulo     String
+  conteudo   String
+  publicado  Boolean     @default(false)
+  userId     Int
+  user       User        @relation(fields: [userId], references: [id], onDelete: Cascade)
+  categorias Categoria[]
+
+  @@index([titulo])
+}
+
+model Categoria {
+  id    Int    @id @default(autoincrement())
+  nome  String @unique
+  posts Post[]
+}
